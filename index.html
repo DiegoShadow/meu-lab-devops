@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechCalc - Calculadora Avançada </title>
+    <title>TechCalc - Calculadora Avançada</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -135,25 +135,29 @@
             border: 3px solid #7c3aed;
         }
 
-        /* Novo estilo para o campo de valor na aba de Câmbio */
-        .currency-input {
-            background-color: #0f172a !important;
-            border: 1px solid #334155;
-            color: #ffffff !important;
-            font-weight: bold;
-            font-size: 16px;
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1e293b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        .currency-input:focus {
-            border-color: #7c3aed;
-            box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.5);
+        .toast.show {
+            opacity: 1;
         }
     </style>
 </head>
 <body class="flex items-center justify-center p-4">
     <div class="w-full max-w-md">
         <div class="text-center mb-6">
-            <!-- Nova imagem adicionada aqui -->
             <img src="https://raw.githubusercontent.com/DiegoShadow/meu-lab-devops/refs/heads/main/DevDog.png" alt="TechCalc Logo" class="logo-img">
             <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 mb-2">TECHCALC PRO</h1>
             <p class="text-sm text-gray-400">Sistema Avançado de Cálculos</p>
@@ -218,7 +222,7 @@
                 <div id="currency-calc" class="p-4 hidden">
                     <div class="mb-4">
                         <label class="block text-gray-400 text-sm mb-2">Valor</label>
-                        <input type="number" id="currency-amount" class="w-full currency-input rounded-lg p-3 focus:outline-none" placeholder="Digite o valor" value="1">
+                        <input type="number" id="currency-amount" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Digite o valor" value="1">
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mb-4">
@@ -474,6 +478,9 @@
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
     <script>
         // Calculator logic
         let currentInput = '0';
@@ -633,16 +640,30 @@
         const refreshRates = document.getElementById('refresh-rates');
         const convertText = document.getElementById('convert-text');
         const convertLoader = document.getElementById('convert-loader');
+        const toast = document.getElementById('toast');
         
         let exchangeRates = {};
         let lastUpdated = null;
+        
+        // Show toast notification
+        function showToast(message, duration = 3000) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
         
         // Fetch exchange rates from API
         async function fetchExchangeRates() {
             try {
                 showLoading(true);
+                showToast('Buscando taxas atualizadas...');
                 
                 // Using ExchangeRate-API (free tier)
+                // Note: In a real application, you should use your own API key
+                // This is a demo key that may not work for all users
                 const response = await fetch('https://api.exchangerate-api.com/v4/latest/BRL');
                 
                 if (!response.ok) {
@@ -650,7 +671,7 @@
                 }
                 
                 const data = await response.json();
-                exchangeRats = data.rates;
+                exchangeRates = data.rates;
                 lastUpdated = new Date(data.time_last_updated * 1000);
                 
                 // Update last updated time
@@ -659,9 +680,10 @@
                 
                 // Perform conversion with updated rates
                 performConversion();
+                showToast('Taxas atualizadas com sucesso!');
             } catch (error) {
                 console.error('Erro ao buscar taxas:', error);
-                alert('Erro ao buscar taxas de câmbio. Usando dados locais como fallback.');
+                showToast('Erro ao buscar taxas. Usando dados locais.', 5000);
                 useFallbackRates();
             } finally {
                 showLoading(false);
@@ -694,15 +716,15 @@
             const fromCurrency = document.getElementById('from-currency').value;
             const toCurrency = document.getElementById('to-currency').value;
             
-            if (isNaN(amount)) {
-                alert('Por favor, digite um valor válido');
+            if (isNaN(amount) || amount <= 0) {
+                showToast('Por favor, digite um valor válido');
                 return;
             }
             
             if (fromCurrency === toCurrency) {
                 convertedAmount.textContent = amount.toFixed(2);
                 conversionRate.textContent = `1 ${fromCurrency} = 1 ${toCurrency}`;
-            else {
+            } else {
                 // Convert via USD as base if needed (since free API often has USD as base)
                 let rate;
                 
@@ -730,10 +752,12 @@
                 convertText.textContent = 'Buscando dados...';
                 convertLoader.classList.remove('hidden');
                 convertBtn.disabled = true;
+                refreshRates.disabled = true;
             } else {
                 convertText.textContent = 'Converter';
                 convertLoader.classList.add('hidden');
                 convertBtn.disabled = false;
+                refreshRates.disabled = false;
             }
         }
         
@@ -785,7 +809,7 @@
             const salary = parseFloat(document.getElementById('salary').value);
             
             if (isNaN(salary) || salary <= 0) {
-                alert('Por favor, digite um salário válido');
+                showToast('Por favor, digite um salário válido');
                 return;
             }
             
@@ -803,13 +827,14 @@
                 
                 showLaborLoading(false);
                 laborResult.classList.remove('hidden');
+                showToast('Cálculo realizado com sucesso!');
             }, 500);
         });
         
         // Calculate férias
         function calculateFerias(salary) {
             const serviceTime = parseInt(document.getElementById('service-time').value);
-            const abono = parseInt document.getElementById('abono').value;
+            const abono = parseInt(document.getElementById('abono').value);
             
             // Validate service time (1-12 months)
             const months = Math.min(Math.max(serviceTime, 1), 12);
@@ -835,7 +860,7 @@
             } else if (grossValue <= 4000.03) {
                 inss = (1412.00 * 0.075) + ((2666.68 - 1412.00) * 0.09) + ((grossValue - 2666.68) * 0.12);
             } else if (grossValue <= 7786.02) {
-                inss = (1412.00 * 0.075) + ((2666.68 - 1412.00) * 0.09) + ((4000.03 - 2666.68) * 0.12) + ((g grossValue - 4000.03) * 0.14);
+                inss = (1412.00 * 0.075) + ((2666.68 - 1412.00) * 0.09) + ((4000.03 - 2666.68) * 0.12) + ((grossValue - 4000.03) * 0.14);
             } else {
                 inss = 7786.02 * 0.14;
             }
@@ -1078,6 +1103,9 @@
                 percentage();
             }
         });
+
+        // Initial fetch of exchange rates
+        fetchExchangeRates();
     </script>
-<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=vikingrancoroso/meus-estudos" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
+</body>
 </html>
