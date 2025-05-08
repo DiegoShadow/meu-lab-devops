@@ -1,62 +1,388 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Calculadora Online 🚀</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-    h1 { color: #007acc; }
-    .container { display: inline-block; text-align: center; }
-    .display { width: 100%; height: 40px; font-size: 1.5em; text-align: right; margin-bottom: 10px; padding: 5px; }
-    .buttons { display: grid; grid-template-columns: repeat(4, 60px); gap: 5px; }
-    button { width: 60px; height: 60px; font-size: 1.2em; cursor: pointer; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechCalc - Advanced Calculator 🚀🚀</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+        
+        .calculator-display {
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 5px rgba(79, 192, 210, 0.7);
+        }
+        
+        .glow-effect {
+            box-shadow: 0 0 15px rgba(79, 192, 210, 0.5);
+        }
+        
+        .btn-operator {
+            background: linear-gradient(145deg, #334155, #1e293b);
+        }
+        
+        .btn-number {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+        }
+        
+        .btn-special {
+            background: linear-gradient(145deg, #7c3aed, #5b21b6);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tab-active {
+            border-bottom: 3px solid #7c3aed;
+            color: #7c3aed;
+        }
+        
+        .cyber-border {
+            position: relative;
+        }
+        
+        .cyber-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #7c3aed, #5b21b6, #4f46e5);
+            z-index: -1;
+            border-radius: inherit;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(79, 192, 210, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(79, 192, 210, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(79, 192, 210, 0);
+            }
+        }
+    </style>
 </head>
-<body>
-  <h1>Calculadora Online 🚀</h1>
-  <div class="container">
-    <input type="text" id="display" class="display" readonly>
-    <div class="buttons">
-      <button onclick="clearDisplay()">C</button>
-      <button onclick="appendValue('/')">÷</button>
-      <button onclick="appendValue('*')">×</button>
-      <button onclick="appendValue('-')">−</button>
-
-      <button onclick="appendValue('7')">7</button>
-      <button onclick="appendValue('8')">8</button>
-      <button onclick="appendValue('9')">9</button>
-      <button onclick="appendValue('+')">+</button>
-
-      <button onclick="appendValue('4')">4</button>
-      <button onclick="appendValue('5')">5</button>
-      <button onclick="appendValue('6')">6</button>
-      <button onclick="calculateResult()">=</button>
-
-      <button onclick="appendValue('1')">1</button>
-      <button onclick="appendValue('2')">2</button>
-      <button onclick="appendValue('3')">3</button>
-      <button onclick="appendValue('.')">.</button>
-
-      <button onclick="appendValue('0')">0</button>
+<body class="flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 mb-2">TECHCALC</h1>
+            <p class="text-sm text-gray-400">Advanced Calculation System</p>
+        </div>
+        
+        <div class="cyber-border rounded-xl overflow-hidden bg-gray-900 p-1 mb-6">
+            <div class="bg-gray-800 rounded-lg overflow-hidden">
+                <!-- Tabs -->
+                <div class="flex border-b border-gray-700">
+                    <button id="standard-tab" class="flex-1 py-3 font-medium tab-active">
+                        <i class="fas fa-calculator mr-2"></i> Standard
+                    </button>
+                    <button id="currency-tab" class="flex-1 py-3 font-medium text-gray-400">
+                        <i class="fas fa-exchange-alt mr-2"></i> Currency
+                    </button>
+                </div>
+                
+                <!-- Standard Calculator -->
+                <div id="standard-calc" class="p-4">
+                    <!-- Display -->
+                    <div class="calculator-display bg-gray-900 rounded-lg p-4 mb-4 text-right text-3xl font-bold h-20 overflow-x-auto flex items-center justify-end">
+                        <span id="display">0</span>
+                    </div>
+                    
+                    <!-- Keypad -->
+                    <div class="grid grid-cols-4 gap-3">
+                        <!-- Row 1 -->
+                        <button class="btn-special rounded-lg p-4 text-white font-bold glow-effect" onclick="clearAll()">AC</button>
+                        <button class="btn-special rounded-lg p-4 text-white font-bold glow-effect" onclick="clearEntry()">CE</button>
+                        <button class="btn-special rounded-lg p-4 text-white font-bold glow-effect" onclick="percentage()">%</button>
+                        <button class="btn-operator rounded-lg p-4 text-purple-400 font-bold glow-effect" onclick="appendOperator('/')">/</button>
+                        
+                        <!-- Row 2 -->
+                        <button class="btn-number rounded-lg p-4 text-white font-bold glow-effect" onclick="appendNumber('7')">7</button>
+                        <button class="btn-number rounded-lg p-4 text-white font-bold glow-effect" onclick="appendNumber('8')">8</button>
+                        <button class="btn-number rounded-lg p-4 text-white font-bold glow-effect" onclick="appendNumber('9')">9</button>
+                        <button class="btn-operator rounded-lg p-4 text-purple-400 font-bold glow-effect" onclick="appendOperator('*')">×</button>
+                        
+                        <!-- Row 3 -->
+                        <button class="btn-number rounded-lg p-4 text-white font-bold glow-effect" onclick="appendNumber('4')">4</button>
+                        <button class="btn-number rounded-lg p-4 text-white font-bold glow-effect" onclick="appendNumber('5')">5</button>
+                        <button class="btn-number rounded-lg p-4 text-white font-bold glow-effect" onclick="appendNumber('6')">6</button>
+                        <button class="btn-operator rounded-lg p-4 text-purple-400 font-bold glow-effect" onclick="appendOperator('-')">-</button>
+                        
+                        <!-- Row 4 -->
+                        <button class="btn-number rounded-lg p-4 text-white font-bold glow-effect" onclick="appendNumber('1')">1</button>
+                        <button class="btn-number rounded-lg p-4 text-white font-bold glow-effect" onclick="appendNumber('2')">2</button>
+                        <button class="btn-number rounded-lg p-4 text-white font-bold glow-effect" onclick="appendNumber('3')">3</button>
+                        <button class="btn-operator rounded-lg p-4 text-purple-400 font-bold glow-effect" onclick="appendOperator('+')">+</button>
+                        
+                        <!-- Row 5 -->
+                        <button class="btn-number rounded-lg p-4 text-white font-bold glow-effect col-span-2" onclick="appendNumber('0')">0</button>
+                        <button class="btn-number rounded-lg p-4 text-white font-bold glow-effect" onclick="appendDecimal()">.</button>
+                        <button class="btn-operator rounded-lg p-4 text-purple-400 font-bold glow-effect pulse" onclick="calculate()">=</button>
+                    </div>
+                </div>
+                
+                <!-- Currency Converter -->
+                <div id="currency-calc" class="p-4 hidden">
+                    <div class="mb-4">
+                        <label class="block text-gray-400 text-sm mb-2">Amount</label>
+                        <input type="number" id="currency-amount" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Enter amount">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-400 text-sm mb-2">From</label>
+                            <select id="from-currency" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="GBP">GBP - British Pound</option>
+                                <option value="JPY">JPY - Japanese Yen</option>
+                                <option value="BRL">BRL - Brazilian Real</option>
+                                <option value="CAD">CAD - Canadian Dollar</option>
+                                <option value="AUD">AUD - Australian Dollar</option>
+                                <option value="CNY">CNY - Chinese Yuan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm mb-2">To</label>
+                            <select id="to-currency" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="GBP">GBP - British Pound</option>
+                                <option value="JPY">JPY - Japanese Yen</option>
+                                <option value="BRL">BRL - Brazilian Real</option>
+                                <option value="CAD">CAD - Canadian Dollar</option>
+                                <option value="AUD">AUD - Australian Dollar</option>
+                                <option value="CNY">CNY - Chinese Yuan</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button id="convert-btn" class="w-full bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg p-3 text-white font-bold glow-effect hover:from-purple-700 hover:to-blue-600 transition-all duration-300">
+                        Convert
+                    </button>
+                    
+                    <div id="currency-result" class="mt-6 bg-gray-900 rounded-lg p-4 text-center hidden">
+                        <div class="text-2xl font-bold" id="converted-amount">0</div>
+                        <div class="text-gray-400 text-sm mt-2" id="conversion-rate">1 USD = 0.85 EUR</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center text-gray-500 text-xs">
+            <p>TechCalc v1.0 | Advanced Calculation System</p>
+        </div>
     </div>
-  </div>
 
-  <script>
-    function appendValue(value) {
-      document.getElementById("display").value += value;
-    }
-
-    function clearDisplay() {
-      document.getElementById("display").value = "";
-    }
-
-    function calculateResult() {
-      try {
-        document.getElementById("display").value = eval(document.getElementById("display").value);
-      } catch {
-        document.getElementById("display").value = "Erro!";
-      }
-    }
-  </script>
+    <script>
+        // Calculator logic
+        let currentInput = '0';
+        let previousInput = '';
+        let operation = null;
+        let resetScreen = false;
+        
+        const display = document.getElementById('display');
+        const standardCalc = document.getElementById('standard-calc');
+        const currencyCalc = document.getElementById('currency-calc');
+        const standardTab = document.getElementById('standard-tab');
+        const currencyTab = document.getElementById('currency-tab');
+        
+        // Tab switching
+        standardTab.addEventListener('click', () => {
+            standardTab.classList.add('tab-active');
+            standardTab.classList.remove('text-gray-400');
+            currencyTab.classList.remove('tab-active');
+            currencyTab.classList.add('text-gray-400');
+            standardCalc.classList.remove('hidden');
+            currencyCalc.classList.add('hidden');
+        });
+        
+        currencyTab.addEventListener('click', () => {
+            currencyTab.classList.add('tab-active');
+            currencyTab.classList.remove('text-gray-400');
+            standardTab.classList.remove('tab-active');
+            standardTab.classList.add('text-gray-400');
+            currencyCalc.classList.remove('hidden');
+            standardCalc.classList.add('hidden');
+        });
+        
+        // Update display
+        function updateDisplay() {
+            display.textContent = currentInput;
+        }
+        
+        // Append number
+        function appendNumber(number) {
+            if (currentInput === '0' || resetScreen) {
+                currentInput = number;
+                resetScreen = false;
+            } else {
+                currentInput += number;
+            }
+            updateDisplay();
+        }
+        
+        // Append decimal
+        function appendDecimal() {
+            if (resetScreen) {
+                currentInput = '0.';
+                resetScreen = false;
+                updateDisplay();
+                return;
+            }
+            
+            if (!currentInput.includes('.')) {
+                currentInput += '.';
+                updateDisplay();
+            }
+        }
+        
+        // Append operator
+        function appendOperator(op) {
+            if (operation !== null) calculate();
+            previousInput = currentInput;
+            operation = op;
+            resetScreen = true;
+        }
+        
+        // Calculate
+        function calculate() {
+            if (operation === null || resetScreen) return;
+            
+            let result;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+            
+            switch (operation) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    result = prev / current;
+                    break;
+                default:
+                    return;
+            }
+            
+            currentInput = result.toString();
+            operation = null;
+            updateDisplay();
+        }
+        
+        // Clear all
+        function clearAll() {
+            currentInput = '0';
+            previousInput = '';
+            operation = null;
+            updateDisplay();
+        }
+        
+        // Clear entry
+        function clearEntry() {
+            currentInput = '0';
+            updateDisplay();
+        }
+        
+        // Percentage
+        function percentage() {
+            currentInput = (parseFloat(currentInput) / 100).toString();
+            updateDisplay();
+        }
+        
+        // Initialize
+        updateDisplay();
+        
+        // Currency converter logic
+        const convertBtn = document.getElementById('convert-btn');
+        const currencyResult = document.getElementById('currency-result');
+        const convertedAmount = document.getElementById('converted-amount');
+        const conversionRate = document.getElementById('conversion-rate');
+        
+        // Mock exchange rates (in a real app, you would fetch these from an API)
+        const exchangeRates = {
+            USD: { EUR: 0.93, GBP: 0.79, JPY: 151.24, BRL: 5.05, CAD: 1.36, AUD: 1.52, CNY: 7.24 },
+            EUR: { USD: 1.08, GBP: 0.85, JPY: 163.21, BRL: 5.45, CAD: 1.47, AUD: 1.64, CNY: 7.82 },
+            GBP: { USD: 1.27, EUR: 1.18, JPY: 192.34, BRL: 6.42, CAD: 1.73, AUD: 1.93, CNY: 9.20 },
+            JPY: { USD: 0.0066, EUR: 0.0061, GBP: 0.0052, BRL: 0.033, CAD: 0.0090, AUD: 0.010, CNY: 0.048 },
+            BRL: { USD: 0.20, EUR: 0.18, GBP: 0.16, JPY: 30.30, CAD: 0.27, AUD: 0.30, CNY: 1.43 },
+            CAD: { USD: 0.74, EUR: 0.68, GBP: 0.58, JPY: 111.11, BRL: 3.70, AUD: 1.12, CNY: 5.33 },
+            AUD: { USD: 0.66, EUR: 0.61, GBP: 0.52, JPY: 99.01, BRL: 3.30, CAD: 0.89, CNY: 4.76 },
+            CNY: { USD: 0.14, EUR: 0.13, GBP: 0.11, JPY: 20.83, BRL: 0.70, CAD: 0.19, AUD: 0.21 }
+        };
+        
+        convertBtn.addEventListener('click', () => {
+            const amount = parseFloat(document.getElementById('currency-amount').value);
+            const fromCurrency = document.getElementById('from-currency').value;
+            const toCurrency = document.getElementById('to-currency').value;
+            
+            if (isNaN(amount)) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            if (fromCurrency === toCurrency) {
+                convertedAmount.textContent = amount.toFixed(2);
+                conversionRate.textContent = `1 ${fromCurrency} = 1 ${toCurrency}`;
+            } else {
+                const rate = exchangeRates[fromCurrency][toCurrency];
+                const result = amount * rate;
+                
+                convertedAmount.textContent = result.toFixed(2);
+                conversionRate.textContent = `1 ${fromCurrency} = ${rate.toFixed(4)} ${toCurrency}`;
+            }
+            
+            currencyResult.classList.remove('hidden');
+        });
+        
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (standardCalc.classList.contains('hidden')) return;
+            
+            if (e.key >= '0' && e.key <= '9') {
+                appendNumber(e.key);
+            } else if (e.key === '.') {
+                appendDecimal();
+            } else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+                appendOperator(e.key);
+            } else if (e.key === 'Enter' || e.key === '=') {
+                calculate();
+            } else if (e.key === 'Escape') {
+                clearAll();
+            } else if (e.key === 'Backspace') {
+                if (currentInput.length === 1) {
+                    currentInput = '0';
+                } else {
+                    currentInput = currentInput.slice(0, -1);
+                }
+                updateDisplay();
+            } else if (e.key === '%') {
+                percentage();
+            }
+        });
+    </script>
 </body>
 </html>
