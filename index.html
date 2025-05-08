@@ -134,6 +134,20 @@
             border-radius: 50%;
             border: 3px solid #7c3aed;
         }
+
+        /* Novo estilo para o campo de valor na aba de Câmbio */
+        .currency-input {
+            background-color: #0f172a !important;
+            border: 1px solid #334155;
+            color: #ffffff !important;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .currency-input:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.5);
+        }
     </style>
 </head>
 <body class="flex items-center justify-center p-4">
@@ -204,7 +218,7 @@
                 <div id="currency-calc" class="p-4 hidden">
                     <div class="mb-4">
                         <label class="block text-gray-400 text-sm mb-2">Valor</label>
-                        <input type="number" id="currency-amount" class="w-full bg-gray-7 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Digite o valor" value="1">
+                        <input type="number" id="currency-amount" class="w-full currency-input rounded-lg p-3 focus:outline-none" placeholder="Digite o valor" value="1">
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mb-4">
@@ -688,7 +702,7 @@
             if (fromCurrency === toCurrency) {
                 convertedAmount.textContent = amount.toFixed(2);
                 conversionRate.textContent = `1 ${fromCurrency} = 1 ${toCurrency}`;
-            } else {
+            else {
                 // Convert via USD as base if needed (since free API often has USD as base)
                 let rate;
                 
@@ -795,7 +809,7 @@
         // Calculate férias
         function calculateFerias(salary) {
             const serviceTime = parseInt(document.getElementById('service-time').value);
-            const abono = parseInt(document.getElementById('abono').value);
+            const abono = parseInt document.getElementById('abono').value;
             
             // Validate service time (1-12 months)
             const months = Math.min(Math.max(serviceTime, 1), 12);
@@ -821,7 +835,7 @@
             } else if (grossValue <= 4000.03) {
                 inss = (1412.00 * 0.075) + ((2666.68 - 1412.00) * 0.09) + ((grossValue - 2666.68) * 0.12);
             } else if (grossValue <= 7786.02) {
-                inss = (1412.00 * 0.075) + ((2666.68 - 1412.00) * 0.09) + ((4000.03 - 2666.68) * 0.12) + ((grossValue - 4000.03) * 0.14);
+                inss = (1412.00 * 0.075) + ((2666.68 - 1412.00) * 0.09) + ((4000.03 - 2666.68) * 0.12) + ((g grossValue - 4000.03) * 0.14);
             } else {
                 inss = 7786.02 * 0.14;
             }
@@ -1065,5 +1079,5 @@
             }
         });
     </script>
-</body>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=vikingrancoroso/meus-estudos" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
 </html>
