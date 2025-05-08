@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 TechCalc - Advanced Calculator 🚀.</title>
+    <title>TechCalc - Calculadora Avançada</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -78,13 +78,61 @@
                 box-shadow: 0 0 0 0 rgba(79, 192, 210, 0);
             }
         }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #7c3aed;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .result-card {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border-left: 4px solid #7c3aed;
+        }
+        
+        .info-tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .info-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        
+        .info-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center p-4">
     <div class="w-full max-w-md">
         <div class="text-center mb-6">
-            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 mb-2">TECHCALC</h1>
-            <p class="text-sm text-gray-400">Advanced Calculation System</p>
+            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 mb-2">TECHCALC PRO</h1>
+            <p class="text-sm text-gray-400">Sistema Avançado de Cálculos</p>
         </div>
         
         <div class="cyber-border rounded-xl overflow-hidden bg-gray-900 p-1 mb-6">
@@ -92,10 +140,13 @@
                 <!-- Tabs -->
                 <div class="flex border-b border-gray-700">
                     <button id="standard-tab" class="flex-1 py-3 font-medium tab-active">
-                        <i class="fas fa-calculator mr-2"></i> Standard
+                        <i class="fas fa-calculator mr-2"></i> Padrão
                     </button>
                     <button id="currency-tab" class="flex-1 py-3 font-medium text-gray-400">
-                        <i class="fas fa-exchange-alt mr-2"></i> Currency
+                        <i class="fas fa-exchange-alt mr-2"></i> Câmbio
+                    </button>
+                    <button id="labor-tab" class="flex-1 py-3 font-medium text-gray-400">
+                        <i class="fas fa-briefcase mr-2"></i> Trabalhista
                     </button>
                 </div>
                 
@@ -142,53 +193,260 @@
                 <!-- Currency Converter -->
                 <div id="currency-calc" class="p-4 hidden">
                     <div class="mb-4">
-                        <label class="block text-gray-400 text-sm mb-2">Amount</label>
-                        <input type="number" id="currency-amount" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Enter amount">
+                        <label class="block text-gray-400 text-sm mb-2">Valor</label>
+                        <input type="number" id="currency-amount" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Digite o valor" value="1">
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-gray-400 text-sm mb-2">From</label>
+                            <label class="block text-gray-400 text-sm mb-2">De</label>
                             <select id="from-currency" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                <option value="USD">USD - US Dollar</option>
+                                <option value="USD">USD - Dólar Americano</option>
                                 <option value="EUR">EUR - Euro</option>
-                                <option value="GBP">GBP - British Pound</option>
-                                <option value="JPY">JPY - Japanese Yen</option>
-                                <option value="BRL">BRL - Brazilian Real</option>
-                                <option value="CAD">CAD - Canadian Dollar</option>
-                                <option value="AUD">AUD - Australian Dollar</option>
-                                <option value="CNY">CNY - Chinese Yuan</option>
+                                <option value="GBP">GBP - Libra Esterlina</option>
+                                <option value="JPY">JPY - Iene Japonês</option>
+                                <option value="BRL" selected>BRL - Real Brasileiro</option>
+                                <option value="CAD">CAD - Dólar Canadense</option>
+                                <option value="AUD">AUD - Dólar Australiano</option>
+                                <option value="CNY">CNY - Yuan Chinês</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-gray-400 text-sm mb-2">To</label>
+                            <label class="block text-gray-400 text-sm mb-2">Para</label>
                             <select id="to-currency" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="USD" selected>USD - Dólar Americano</option>
                                 <option value="EUR">EUR - Euro</option>
-                                <option value="USD">USD - US Dollar</option>
-                                <option value="GBP">GBP - British Pound</option>
-                                <option value="JPY">JPY - Japanese Yen</option>
-                                <option value="BRL">BRL - Brazilian Real</option>
-                                <option value="CAD">CAD - Canadian Dollar</option>
-                                <option value="AUD">AUD - Australian Dollar</option>
-                                <option value="CNY">CNY - Chinese Yuan</option>
+                                <option value="GBP">GBP - Libra Esterlina</option>
+                                <option value="JPY">JPY - Iene Japonês</option>
+                                <option value="BRL">BRL - Real Brasileiro</option>
+                                <option value="CAD">CAD - Dólar Canadense</option>
+                                <option value="AUD">AUD - Dólar Australiano</option>
+                                <option value="CNY">CNY - Yuan Chinês</option>
                             </select>
                         </div>
                     </div>
                     
-                    <button id="convert-btn" class="w-full bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg p-3 text-white font-bold glow-effect hover:from-purple-700 hover:to-blue-600 transition-all duration-300">
-                        Convert
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-sm text-gray-400">
+                            <span id="last-update">Última atualização: --/--/----</span>
+                        </div>
+                        <button id="refresh-rates" class="text-purple-400 hover:text-purple-300">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <button id="convert-btn" class="w-full bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg p-3 text-white font-bold glow-effect hover:from-purple-700 hover:to-blue-600 transition-all duration-300 flex items-center justify-center">
+                        <span id="convert-text">Converter</span>
+                        <span id="convert-loader" class="loading ml-2 hidden"></span>
                     </button>
                     
                     <div id="currency-result" class="mt-6 bg-gray-900 rounded-lg p-4 text-center hidden">
-                        <div class="text-2xl font-bold" id="converted-amount">0</div>
-                        <div class="text-gray-400 text-sm mt-2" id="conversion-rate">1 USD = 0.85 EUR</div>
+                        <div class="text-2xl font-bold mb-2" id="converted-amount">0</div>
+                        <div class="text-gray-400 text-sm" id="conversion-rate">1 BRL = 0.20 USD</div>
+                        <div class="text-xs text-gray-500 mt-2" id="api-source">Dados fornecidos por ExchangeRate-API</div>
+                    </div>
+                </div>
+                
+                <!-- Labor Calculator -->
+                <div id="labor-calc" class="p-4 hidden">
+                    <div class="mb-4">
+                        <label class="block text-gray-400 text-sm mb-2">Tipo de Cálculo</label>
+                        <select id="labor-type" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="ferias">Férias</option>
+                            <option value="rescisao">Rescisão</option>
+                            <option value="aposentadoria">Aposentadoria</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Common Fields -->
+                    <div class="mb-4">
+                        <label class="block text-gray-400 text-sm mb-2">Salário Bruto (R$)</label>
+                        <input type="number" id="salary" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Digite o salário bruto">
+                    </div>
+                    
+                    <!-- Férias Fields -->
+                    <div id="ferias-fields">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-gray-400 text-sm mb-2">Tempo de Serviço (meses)</label>
+                                <input type="number" id="service-time" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Meses trabalhados" min="1" max="12" value="12">
+                            </div>
+                            <div>
+                                <label class="block text-gray-400 text-sm mb-2">Abono Pecuniário</label>
+                                <select id="abono" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="0">Não</option>
+                                    <option value="1">Sim (1/3)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rescisão Fields -->
+                    <div id="rescisao-fields" class="hidden">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-gray-400 text-sm mb-2">Tipo de Demissão</label>
+                                <select id="demission-type" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="semJustaCausa">Sem justa causa</option>
+                                    <option value="comJustaCausa">Com justa causa</option>
+                                    <option value="pedidoDemissao">Pedido de demissão</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-400 text-sm mb-2">Tempo de Serviço (anos)</label>
+                                <input type="number" id="service-years" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Anos trabalhados" min="0" value="1">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-400 text-sm mb-2">Aviso Prévio</label>
+                            <select id="aviso-previo" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="trabalhado">Trabalhado</option>
+                                <option value="indenizado">Indenizado</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-400 text-sm mb-2">Saldo FGTS + Multa</label>
+                            <select id="fgts" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="1">Sim</option>
+                                <option value="0">Não</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Aposentadoria Fields -->
+                    <div id="aposentadoria-fields" class="hidden">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-gray-400 text-sm mb-2">Idade</label>
+                                <input type="number" id="age" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Idade atual" min="18" value="30">
+                            </div>
+                            <div>
+                                <label class="block text-gray-400 text-sm mb-2">Tempo de Contribuição</label>
+                                <input type="number" id="contribution-time" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Anos contribuídos" min="0" value="5">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-400 text-sm mb-2">Gênero</label>
+                            <select id="gender" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="masculino">Masculino</option>
+                                <option value="feminino">Feminino</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-400 text-sm mb-2">Regime</label>
+                            <select id="regime" class="w-full bg-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="INSS">INSS</option>
+                                <option value="RPPS">RPPS (Servidor Público)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button id="calculate-labor" class="w-full bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg p-3 text-white font-bold glow-effect hover:from-purple-700 hover:to-blue-600 transition-all duration-300 flex items-center justify-center">
+                        <span id="labor-text">Calcular</span>
+                        <span id="labor-loader" class="loading ml-2 hidden"></span>
+                    </button>
+                    
+                    <div id="labor-result" class="mt-6 hidden">
+                        <div class="result-card rounded-lg p-4 mb-3">
+                            <h3 class="font-bold text-lg mb-2 text-purple-400" id="labor-title">Resultado</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span>Valor Bruto:</span>
+                                    <span class="font-bold" id="gross-value">R$ 0,00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Descontos:</span>
+                                    <span class="font-bold" id="discounts">R$ 0,00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Valor Líquido:</span>
+                                    <span class="font-bold text-green-400" id="net-value">R$ 0,00</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="ferias-details" class="hidden">
+                            <div class="result-card rounded-lg p-4 mb-3">
+                                <h4 class="font-bold mb-2">Detalhes das Férias</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>1/3 de Férias:</span>
+                                        <span id="one-third">R$ 0,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Abono Pecuniário:</span>
+                                        <span id="abono-value">R$ 0,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>INSS:</span>
+                                        <span id="inss-ferias">R$ 0,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>IRRF:</span>
+                                        <span id="irrf-ferias">R$ 0,00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="rescisao-details" class="hidden">
+                            <div class="result-card rounded-lg p-4 mb-3">
+                                <h4 class="font-bold mb-2">Detalhes da Rescisão</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>Saldo Salário:</span>
+                                        <span id="saldo-salario">R$ 0,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Férias Proporcionais:</span>
+                                        <span id="ferias-proporcionais">R$ 0,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>13º Proporcional:</span>
+                                        <span id="decimo-terceiro">R$ 0,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Aviso Prévio:</span>
+                                        <span id="aviso-previo-value">R$ 0,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Multa FGTS (40%):</span>
+                                        <span id="fgts-multa">R$ 0,00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="aposentadoria-details" class="hidden">
+                            <div class="result-card rounded-lg p-4">
+                                <h4 class="font-bold mb-2">Detalhes da Aposentadoria</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>Tempo Restante:</span>
+                                        <span id="remaining-time">0 anos</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Idade Mínima:</span>
+                                        <span id="min-age">65 anos</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Tempo Mínimo:</span>
+                                        <span id="min-contribution">15 anos</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Valor Estimado:</span>
+                                        <span id="estimated-pension">R$ 0,00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="text-center text-gray-500 text-xs">
-            <p>TechCalc v1.0 | Advanced Calculation System</p>
+            <p>TechCalc Pro v3.0 | Cálculos Trabalhistas Atualizados 2024</p>
         </div>
     </div>
 
@@ -202,8 +460,10 @@
         const display = document.getElementById('display');
         const standardCalc = document.getElementById('standard-calc');
         const currencyCalc = document.getElementById('currency-calc');
+        const laborCalc = document.getElementById('labor-calc');
         const standardTab = document.getElementById('standard-tab');
         const currencyTab = document.getElementById('currency-tab');
+        const laborTab = document.getElementById('labor-tab');
         
         // Tab switching
         standardTab.addEventListener('click', () => {
@@ -211,8 +471,11 @@
             standardTab.classList.remove('text-gray-400');
             currencyTab.classList.remove('tab-active');
             currencyTab.classList.add('text-gray-400');
+            laborTab.classList.remove('tab-active');
+            laborTab.classList.add('text-gray-400');
             standardCalc.classList.remove('hidden');
             currencyCalc.classList.add('hidden');
+            laborCalc.classList.add('hidden');
         });
         
         currencyTab.addEventListener('click', () => {
@@ -220,8 +483,29 @@
             currencyTab.classList.remove('text-gray-400');
             standardTab.classList.remove('tab-active');
             standardTab.classList.add('text-gray-400');
+            laborTab.classList.remove('tab-active');
+            laborTab.classList.add('text-gray-400');
             currencyCalc.classList.remove('hidden');
             standardCalc.classList.add('hidden');
+            laborCalc.classList.add('hidden');
+            
+            // Fetch rates when currency tab is opened
+            fetchExchangeRates();
+        });
+        
+        laborTab.addEventListener('click', () => {
+            laborTab.classList.add('tab-active');
+            laborTab.classList.remove('text-gray-400');
+            standardTab.classList.remove('tab-active');
+            standardTab.classList.add('text-gray-400');
+            currencyTab.classList.remove('tab-active');
+            currencyTab.classList.add('text-gray-400');
+            laborCalc.classList.remove('hidden');
+            standardCalc.classList.add('hidden');
+            currencyCalc.classList.add('hidden');
+            
+            // Reset labor calculator fields
+            resetLaborFields();
         });
         
         // Update display
@@ -321,26 +605,73 @@
         const currencyResult = document.getElementById('currency-result');
         const convertedAmount = document.getElementById('converted-amount');
         const conversionRate = document.getElementById('conversion-rate');
+        const lastUpdate = document.getElementById('last-update');
+        const refreshRates = document.getElementById('refresh-rates');
+        const convertText = document.getElementById('convert-text');
+        const convertLoader = document.getElementById('convert-loader');
         
-        // Mock exchange rates (in a real app, you would fetch these from an API)
-        const exchangeRates = {
-            USD: { EUR: 0.93, GBP: 0.79, JPY: 151.24, BRL: 5.05, CAD: 1.36, AUD: 1.52, CNY: 7.24 },
-            EUR: { USD: 1.08, GBP: 0.85, JPY: 163.21, BRL: 5.45, CAD: 1.47, AUD: 1.64, CNY: 7.82 },
-            GBP: { USD: 1.27, EUR: 1.18, JPY: 192.34, BRL: 6.42, CAD: 1.73, AUD: 1.93, CNY: 9.20 },
-            JPY: { USD: 0.0066, EUR: 0.0061, GBP: 0.0052, BRL: 0.033, CAD: 0.0090, AUD: 0.010, CNY: 0.048 },
-            BRL: { USD: 0.20, EUR: 0.18, GBP: 0.16, JPY: 30.30, CAD: 0.27, AUD: 0.30, CNY: 1.43 },
-            CAD: { USD: 0.74, EUR: 0.68, GBP: 0.58, JPY: 111.11, BRL: 3.70, AUD: 1.12, CNY: 5.33 },
-            AUD: { USD: 0.66, EUR: 0.61, GBP: 0.52, JPY: 99.01, BRL: 3.30, CAD: 0.89, CNY: 4.76 },
-            CNY: { USD: 0.14, EUR: 0.13, GBP: 0.11, JPY: 20.83, BRL: 0.70, CAD: 0.19, AUD: 0.21 }
-        };
+        let exchangeRates = {};
+        let lastUpdated = null;
         
-        convertBtn.addEventListener('click', () => {
+        // Fetch exchange rates from API
+        async function fetchExchangeRates() {
+            try {
+                showLoading(true);
+                
+                // Using ExchangeRate-API (free tier)
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/BRL');
+                
+                if (!response.ok) {
+                    throw new Error('Falha ao obter taxas de câmbio');
+                }
+                
+                const data = await response.json();
+                exchangeRates = data.rates;
+                lastUpdated = new Date(data.time_last_updated * 1000);
+                
+                // Update last updated time
+                const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+                lastUpdate.textContent = `Última atualização: ${lastUpdated.toLocaleDateString('pt-BR', options)}`;
+                
+                // Perform conversion with updated rates
+                performConversion();
+            } catch (error) {
+                console.error('Erro ao buscar taxas:', error);
+                alert('Erro ao buscar taxas de câmbio. Usando dados locais como fallback.');
+                useFallbackRates();
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Fallback rates if API fails
+        function useFallbackRates() {
+            exchangeRates = {
+                USD: 0.20,
+                EUR: 0.18,
+                GBP: 0.16,
+                JPY: 30.30,
+                BRL: 1,
+                CAD: 0.27,
+                AUD: 0.30,
+                CNY: 1.43
+            };
+            
+            lastUpdated = new Date();
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+            lastUpdate.textContent = `Última atualização: ${lastUpdated.toLocaleDateString('pt-BR', options)} (offline)`;
+            
+            performConversion();
+        }
+        
+        // Perform the currency conversion
+        function performConversion() {
             const amount = parseFloat(document.getElementById('currency-amount').value);
             const fromCurrency = document.getElementById('from-currency').value;
             const toCurrency = document.getElementById('to-currency').value;
             
             if (isNaN(amount)) {
-                alert('Please enter a valid amount');
+                alert('Por favor, digite um valor válido');
                 return;
             }
             
@@ -348,15 +679,355 @@
                 convertedAmount.textContent = amount.toFixed(2);
                 conversionRate.textContent = `1 ${fromCurrency} = 1 ${toCurrency}`;
             } else {
-                const rate = exchangeRates[fromCurrency][toCurrency];
+                // Convert via USD as base if needed (since free API often has USD as base)
+                let rate;
+                
+                if (fromCurrency === 'BRL') {
+                    rate = exchangeRates[toCurrency];
+                } else if (toCurrency === 'BRL') {
+                    rate = 1 / exchangeRates[fromCurrency];
+                } else {
+                    // Convert fromCurrency -> BRL -> toCurrency
+                    rate = (1 / exchangeRates[fromCurrency]) * exchangeRates[toCurrency];
+                }
+                
                 const result = amount * rate;
                 
                 convertedAmount.textContent = result.toFixed(2);
-                conversionRate.textContent = `1 ${fromCurrency} = ${rate.toFixed(4)} ${toCurrency}`;
+                conversionRate.textContent = `1 ${fromCurrency} = ${rate.toFixed(6)} ${toCurrency}`;
             }
             
             currencyResult.classList.remove('hidden');
+        }
+        
+        // Show loading state
+        function showLoading(isLoading) {
+            if (isLoading) {
+                convertText.textContent = 'Buscando dados...';
+                convertLoader.classList.remove('hidden');
+                convertBtn.disabled = true;
+            } else {
+                convertText.textContent = 'Converter';
+                convertLoader.classList.add('hidden');
+                convertBtn.disabled = false;
+            }
+        }
+        
+        // Labor calculator logic
+        const laborType = document.getElementById('labor-type');
+        const feriasFields = document.getElementById('ferias-fields');
+        const rescisaoFields = document.getElementById('rescisao-fields');
+        const aposentadoriaFields = document.getElementById('aposentadoria-fields');
+        const calculateLaborBtn = document.getElementById('calculate-labor');
+        const laborResult = document.getElementById('labor-result');
+        const laborText = document.getElementById('labor-text');
+        const laborLoader = document.getElementById('labor-loader');
+        
+        // Show/hide fields based on labor type
+        laborType.addEventListener('change', function() {
+            resetLaborFields();
+            
+            const type = this.value;
+            
+            feriasFields.classList.add('hidden');
+            rescisaoFields.classList.add('hidden');
+            aposentadoriaFields.classList.add('hidden');
+            
+            if (type === 'ferias') {
+                feriasFields.classList.remove('hidden');
+            } else if (type === 'rescisao') {
+                rescisaoFields.classList.remove('hidden');
+            } else if (type === 'aposentadoria') {
+                aposentadoriaFields.classList.remove('hidden');
+            }
         });
+        
+        // Reset labor fields
+        function resetLaborFields() {
+            document.getElementById('ferias-details').classList.add('hidden');
+            document.getElementById('rescisao-details').classList.add('hidden');
+            document.getElementById('aposentadoria-details').classList.add('hidden');
+            laborResult.classList.add('hidden');
+        }
+        
+        // Format currency
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        }
+        
+        // Calculate labor values
+        calculateLaborBtn.addEventListener('click', function() {
+            const type = laborType.value;
+            const salary = parseFloat(document.getElementById('salary').value);
+            
+            if (isNaN(salary) || salary <= 0) {
+                alert('Por favor, digite um salário válido');
+                return;
+            }
+            
+            showLaborLoading(true);
+            
+            // Simulate calculation delay
+            setTimeout(() => {
+                if (type === 'ferias') {
+                    calculateFerias(salary);
+                } else if (type === 'rescisao') {
+                    calculateRescisao(salary);
+                } else if (type === 'aposentadoria') {
+                    calculateAposentadoria(salary);
+                }
+                
+                showLaborLoading(false);
+                laborResult.classList.remove('hidden');
+            }, 500);
+        });
+        
+        // Calculate férias
+        function calculateFerias(salary) {
+            const serviceTime = parseInt(document.getElementById('service-time').value);
+            const abono = parseInt(document.getElementById('abono').value);
+            
+            // Validate service time (1-12 months)
+            const months = Math.min(Math.max(serviceTime, 1), 12);
+            
+            // Calculate proportional value
+            const proportionalValue = (salary * months) / 12;
+            
+            // 1/3 of férias (constitutional right)
+            const oneThird = proportionalValue / 3;
+            
+            // Abono pecuniário (optional 1/3 more)
+            const abonoValue = abono ? proportionalValue / 3 : 0;
+            
+            // Total gross value
+            const grossValue = proportionalValue + oneThird + abonoValue;
+            
+            // Calculate INSS (using 2024 rates)
+            let inss = 0;
+            if (grossValue <= 1412.00) {
+                inss = grossValue * 0.075;
+            } else if (grossValue <= 2666.68) {
+                inss = (1412.00 * 0.075) + ((grossValue - 1412.00) * 0.09);
+            } else if (grossValue <= 4000.03) {
+                inss = (1412.00 * 0.075) + ((2666.68 - 1412.00) * 0.09) + ((grossValue - 2666.68) * 0.12);
+            } else if (grossValue <= 7786.02) {
+                inss = (1412.00 * 0.075) + ((2666.68 - 1412.00) * 0.09) + ((4000.03 - 2666.68) * 0.12) + ((grossValue - 4000.03) * 0.14);
+            } else {
+                inss = 7786.02 * 0.14;
+            }
+            
+            // Calculate IRRF (using 2024 rates)
+            const baseIR = grossValue - inss;
+            let irrf = 0;
+            
+            if (baseIR <= 2112.00) {
+                irrf = 0;
+            } else if (baseIR <= 2826.65) {
+                irrf = (baseIR * 0.075) - 158.40;
+            } else if (baseIR <= 3751.05) {
+                irrf = (baseIR * 0.15) - 370.40;
+            } else if (baseIR <= 4664.68) {
+                irrf = (baseIR * 0.225) - 651.73;
+            } else {
+                irrf = (baseIR * 0.275) - 884.96;
+            }
+            
+            // Ensure IRRF is not negative
+            irrf = Math.max(irrf, 0);
+            
+            // Net value
+            const netValue = grossValue - inss - irrf;
+            
+            // Update UI
+            document.getElementById('labor-title').textContent = 'Cálculo de Férias';
+            document.getElementById('gross-value').textContent = formatCurrency(grossValue);
+            document.getElementById('discounts').textContent = formatCurrency(inss + irrf);
+            document.getElementById('net-value').textContent = formatCurrency(netValue);
+            
+            // Show details
+            document.getElementById('ferias-details').classList.remove('hidden');
+            document.getElementById('rescisao-details').classList.add('hidden');
+            document.getElementById('aposentadoria-details').classList.add('hidden');
+            
+            // Update details
+            document.getElementById('one-third').textContent = formatCurrency(oneThird);
+            document.getElementById('abono-value').textContent = formatCurrency(abonoValue);
+            document.getElementById('inss-ferias').textContent = formatCurrency(inss);
+            document.getElementById('irrf-ferias').textContent = formatCurrency(irrf);
+        }
+        
+        // Calculate rescisão
+        function calculateRescisao(salary) {
+            const demissionType = document.getElementById('demission-type').value;
+            const serviceYears = parseInt(document.getElementById('service-years').value);
+            const avisoPrevio = document.getElementById('aviso-previo').value;
+            const fgts = document.getElementById('fgts').value === '1';
+            
+            // Calculate proportional 13th salary
+            const decimoTerceiro = (salary * serviceYears) / 12;
+            
+            // Calculate proportional vacation + 1/3
+            const feriasProporcionais = (salary * serviceYears) / 12;
+            const oneThirdFerias = feriasProporcionais / 3;
+            
+            // Calculate saldo de salário (assuming 1 month)
+            const saldoSalario = salary;
+            
+            // Calculate aviso prévio (1 month salary)
+            const avisoPrevioValue = avisoPrevio === 'indenizado' ? salary : 0;
+            
+            // Calculate FGTS + 40% multa (if applicable)
+            let fgtsMulta = 0;
+            if (fgts && demissionType === 'semJustaCausa') {
+                // 8% of salary per year + 40% of total FGTS
+                const totalFGTS = salary * 0.08 * serviceYears;
+                fgtsMulta = totalFGTS * 0.4;
+            }
+            
+            // Calculate total based on demission type
+            let grossValue = 0;
+            
+            if (demissionType === 'semJustaCausa') {
+                grossValue = saldoSalario + decimoTerceiro + feriasProporcionais + oneThirdFerias + avisoPrevioValue + fgtsMulta;
+            } else if (demissionType === 'comJustaCausa') {
+                grossValue = saldoSalario + decimoTerceiro + feriasProporcionais + oneThirdFerias;
+            } else { // pedidoDemissao
+                grossValue = saldoSalario + decimoTerceiro + feriasProporcionais + oneThirdFerias;
+            }
+            
+            // Calculate INSS (using 2024 rates)
+            let inss = 0;
+            if (grossValue <= 1412.00) {
+                inss = grossValue * 0.075;
+            } else if (grossValue <= 2666.68) {
+                inss = (1412.00 * 0.075) + ((grossValue - 1412.00) * 0.09);
+            } else if (grossValue <= 4000.03) {
+                inss = (1412.00 * 0.075) + ((2666.68 - 1412.00) * 0.09) + ((grossValue - 2666.68) * 0.12);
+            } else if (grossValue <= 7786.02) {
+                inss = (1412.00 * 0.075) + ((2666.68 - 1412.00) * 0.09) + ((4000.03 - 2666.68) * 0.12) + ((grossValue - 4000.03) * 0.14);
+            } else {
+                inss = 7786.02 * 0.14;
+            }
+            
+            // Calculate IRRF (using 2024 rates)
+            const baseIR = grossValue - inss;
+            let irrf = 0;
+            
+            if (baseIR <= 2112.00) {
+                irrf = 0;
+            } else if (baseIR <= 2826.65) {
+                irrf = (baseIR * 0.075) - 158.40;
+            } else if (baseIR <= 3751.05) {
+                irrf = (baseIR * 0.15) - 370.40;
+            } else if (baseIR <= 4664.68) {
+                irrf = (baseIR * 0.225) - 651.73;
+            } else {
+                irrf = (baseIR * 0.275) - 884.96;
+            }
+            
+            // Ensure IRRF is not negative
+            irrf = Math.max(irrf, 0);
+            
+            // Net value
+            const netValue = grossValue - inss - irrf;
+            
+            // Update UI
+            document.getElementById('labor-title').textContent = 'Cálculo de Rescisão';
+            document.getElementById('gross-value').textContent = formatCurrency(grossValue);
+            document.getElementById('discounts').textContent = formatCurrency(inss + irrf);
+            document.getElementById('net-value').textContent = formatCurrency(netValue);
+            
+            // Show details
+            document.getElementById('ferias-details').classList.add('hidden');
+            document.getElementById('rescisao-details').classList.remove('hidden');
+            document.getElementById('aposentadoria-details').classList.add('hidden');
+            
+            // Update details
+            document.getElementById('saldo-salario').textContent = formatCurrency(saldoSalario);
+            document.getElementById('ferias-proporcionais').textContent = formatCurrency(feriasProporcionais + oneThirdFerias);
+            document.getElementById('decimo-terceiro').textContent = formatCurrency(decimoTerceiro);
+            document.getElementById('aviso-previo-value').textContent = formatCurrency(avisoPrevioValue);
+            document.getElementById('fgts-multa').textContent = formatCurrency(fgtsMulta);
+        }
+        
+        // Calculate aposentadoria
+        function calculateAposentadoria(salary) {
+            const age = parseInt(document.getElementById('age').value);
+            const contributionTime = parseInt(document.getElementById('contribution-time').value);
+            const gender = document.getElementById('gender').value;
+            const regime = document.getElementById('regime').value;
+            
+            // Calculate remaining time based on current rules (2024)
+            let minAge, minContribution;
+            
+            if (regime === 'INSS') {
+                // INSS rules (after 2019 reform)
+                if (gender === 'masculino') {
+                    minAge = 65;
+                    minContribution = 20;
+                } else {
+                    minAge = 62;
+                    minContribution = 15;
+                }
+            } else {
+                // RPPS rules (more favorable for public servants)
+                if (gender === 'masculino') {
+                    minAge = 60;
+                    minContribution = 25;
+                } else {
+                    minAge = 55;
+                    minContribution = 20;
+                }
+            }
+            
+            const remainingAge = Math.max(0, minAge - age);
+            const remainingContribution = Math.max(0, minContribution - contributionTime);
+            const remainingTime = Math.max(remainingAge, remainingContribution);
+            
+            // Calculate estimated pension (average of last salaries with limit)
+            const averageSalary = salary; // Simplified for this example
+            const pensionLimit = regime === 'INSS' ? 7786.02 : averageSalary * 0.8; // 80% for RPPS
+            const estimatedPension = Math.min(averageSalary, pensionLimit);
+            
+            // Update UI
+            document.getElementById('labor-title').textContent = 'Cálculo de Aposentadoria';
+            document.getElementById('gross-value').textContent = formatCurrency(estimatedPension);
+            document.getElementById('discounts').textContent = formatCurrency(0); // No discounts in pension
+            document.getElementById('net-value').textContent = formatCurrency(estimatedPension);
+            
+            // Show details
+            document.getElementById('ferias-details').classList.add('hidden');
+            document.getElementById('rescisao-details').classList.add('hidden');
+            document.getElementById('aposentadoria-details').classList.remove('hidden');
+            
+            // Update details
+            document.getElementById('remaining-time').textContent = `${remainingTime} anos`;
+            document.getElementById('min-age').textContent = `${minAge} anos`;
+            document.getElementById('min-contribution').textContent = `${minContribution} anos`;
+            document.getElementById('estimated-pension').textContent = formatCurrency(estimatedPension);
+        }
+        
+        // Show loading state for labor calculator
+        function showLaborLoading(isLoading) {
+            if (isLoading) {
+                laborText.textContent = 'Calculando...';
+                laborLoader.classList.remove('hidden');
+                calculateLaborBtn.disabled = true;
+            } else {
+                laborText.textContent = 'Calcular';
+                laborLoader.classList.add('hidden');
+                calculateLaborBtn.disabled = false;
+            }
+        }
+        
+        // Event listeners
+        convertBtn.addEventListener('click', performConversion);
+        refreshRates.addEventListener('click', fetchExchangeRates);
+        
+        // When currency inputs change, update conversion
+        document.getElementById('currency-amount').addEventListener('input', performConversion);
+        document.getElementById('from-currency').addEventListener('change', performConversion);
+        document.getElementById('to-currency').addEventListener('change', performConversion);
         
         // Keyboard support
         document.addEventListener('keydown', (e) => {
